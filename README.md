@@ -15,3 +15,5 @@ mouse (2).exe - simply changes the cursor every couple of milliseconds (similar 
 bat.bat - Bat file = blocker
 
 Generator v1.exe - created with the Generator KUZJA 1.5 tool, exhibits several intrusive behaviors such as "GDI effects", annoying audio beeps, random cursor movement, and more.
+
+china.exe - dobrota_trojan.exe but modified 
