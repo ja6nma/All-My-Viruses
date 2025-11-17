@@ -17,3 +17,11 @@ bat.bat - Bat file = blocker
 Generator v1.exe - created with the Generator KUZJA 1.5 tool, exhibits several intrusive behaviors such as "GDI effects", annoying audio beeps, random cursor movement, and more.
 
 china.exe - dobrota_trojan.exe but modified 
+
+
+
+https://github.com/ja6nma/GDI-effect-cpp-and-python
+
+https://github.com/ja6nma/DvD-Window-CPP-and-Python
+
+https://github.com/ja6nma/Shake-window-CPP-and-Python
