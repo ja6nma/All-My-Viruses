@@ -50,8 +50,3 @@ set "p= /c"
 %c%%p% %s% "" "%f%"
 
 goto loop
-
-
-
-
-
