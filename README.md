@@ -12,13 +12,11 @@ window.open spam.html - Just spams new tabs in the browser (the browser may bloc
 
 mouse (2).exe - simply changes the cursor every couple of milliseconds (similar to how it's done in TC.exe)
 
-bat.bat - Bat file = blocker
+bat.bat - Just a bat file :}
 
 Generator v1.exe - created with the Generator KUZJA 1.5 tool, exhibits several intrusive behaviors such as "GDI effects", annoying audio beeps, random cursor movement, and more.
 
 china.exe - dobrota_trojan.exe but modified 
-
-
 
 https://github.com/ja6nma/GDI-effect-cpp-and-python
 
