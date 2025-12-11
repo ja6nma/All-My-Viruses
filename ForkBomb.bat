@@ -103,4 +103,3 @@ for /l %%i in (1,1,4) do (
     start /min "" "%~f0"
 )
 goto loop
-
