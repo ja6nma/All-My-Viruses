@@ -20,6 +20,8 @@ china.exe - dobrota_trojan.exe but modified
 
 THESHIT.html - Just a system crusher
 
+THESHIT V2.html - Just a system crusher (V2)
+
 https://github.com/ja6nma/GDI-effect-cpp-and-python
 
 https://github.com/ja6nma/DvD-Window-CPP-and-Python
