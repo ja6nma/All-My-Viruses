@@ -18,6 +18,8 @@ Generator v1.exe - created with the Generator KUZJA 1.5 tool, exhibits several i
 
 china.exe - dobrota_trojan.exe but modified 
 
+THESHIT.html - Just a system crusher
+
 https://github.com/ja6nma/GDI-effect-cpp-and-python
 
 https://github.com/ja6nma/DvD-Window-CPP-and-Python
