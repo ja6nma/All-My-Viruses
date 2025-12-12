@@ -1,3 +1,6 @@
+!!!PLEASE DO NOT RUN THESE FILES, THE AUTHOR IS NOT RESPONSIBLE FOR BROKEN PC'S!!!
+
+
 TC.exe - The theme and cursor will change randomly
 
 ForkBomb.bat - VERY POWERFUL FORKBOMB 
