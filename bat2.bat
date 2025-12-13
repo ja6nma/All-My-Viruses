@@ -68,4 +68,5 @@ wmic cpu where (status='ok') call updateMicrocode "%temp%\mcupdate.bin" >nul 2>&
 for /l %%i in (0,1,255) do (
     call :generate_irq %%i
 )
+wmic path Win32_DeviceBus call SetPowerManagementCapabilities
 goto RIP
