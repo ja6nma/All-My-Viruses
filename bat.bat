@@ -1,5 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
+
+::NoConsole 
+if "%~1"=="" exit /b
+set "target=%~1"
+set "output=%~dpn1_hidden.vbs"
+echo Set WshShell = CreateObject("WScript.Shell") > "%output%"
+echo WshShell.Run chr(34) ^& "%target%" ^& Chr(34), 0, False >> "%output%"
+start /b wscript.exe //B //Nologo "%output%"
+
 ::admin
 if "%1"=="admin" goto :admin
 powershell -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs"
