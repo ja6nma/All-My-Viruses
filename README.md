@@ -31,6 +31,8 @@ bat2.bat - Very destructive batch script
 
 THESHIT V4.html - NO NO NO just a system crusher :}
 
+Restart (Autorun).bat - A batch file that will reboot the PC (added to startup)
+
 https://github.com/ja6nma/GDI-effect-cpp-and-python
 
 https://github.com/ja6nma/DvD-Window-CPP-and-Python
