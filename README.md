@@ -27,8 +27,6 @@ THESHIT V2.html - No just a system crusher :}
 
 THESHIT v3.html - NO just a system crusher :} 
 
-bat2.bat - Very destructive batch script
-
 THESHIT V4.html - NO NO NO just a system crusher :}
 
 https://github.com/ja6nma/GDI-effect-cpp-and-python
