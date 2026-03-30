@@ -7,7 +7,7 @@ ForkBomb.bat - VERY POWERFUL FORKBOMB
 
 mouse.exe - Just moves the cursor back and forth (Generator KUZJA 1.5)
 
-4.exe - GDI effect by: dodo_paca (https://github.com/artemkorotenko856-spec) and ITTM
+4.exe - GDI effect by: [dodo_paca](https://github.com/artemkorotenko856-spec) and ITTM
 
 ꋪꍟꀸꎭꀤꌗ꓄.exe - GDI effect and ???
 
@@ -17,9 +17,11 @@ mouse (2).exe - simply changes the cursor every couple of milliseconds (similar 
 
 bat.bat - Just a malicious bat file :}
 
-Generator v1.exe - created with the Generator KUZJA 1.5 tool, exhibits several intrusive behaviors such as "GDI effects", annoying audio beeps, random cursor movement, and more.
+Generator v1.exe - created with the Generator KUZJA 1.5 tool, exhibits several intrusive behaviors such as "GDI effects", annoying audio beeps, random cursor movement, and more
 
 china.exe - dobrota_trojan.exe but modified 
+
+window_flood.exe - windows GUI DoS attack via window flooding
 
 https://github.com/ja6nma/GDI-effect-cpp-and-python
 
